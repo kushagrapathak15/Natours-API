@@ -4,7 +4,9 @@
   "description": "Learning Backend",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js",
+    "debug": "ndb server.js"
   },
   "author": "Kushagra Pathak",
   "license": "ISC",
@@ -12,7 +14,10 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongoose": "^5.13.14",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "ndb": "^1.1.5",
+    "slugify": "^1.6.5",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "eslint": "^8.19.0",
