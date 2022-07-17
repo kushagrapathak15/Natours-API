@@ -1,14 +1,28 @@
 const express = require('express');
-const {
-  getAllUsers,
-  createUser,
-  getUser,
-  updateUser,
-  deleteUser,
-} = require('./../controllers/userController');
-const routes = express.Router();
+const userController = require('../controllers/userController');
 
-routes.route('/').get(getAllUsers).post(createUser);
-routes.route('/:userId').get(getUser).patch(updateUser).delete(deleteUser);
+const authController = require('../controllers/authController');
+
+const routes = express.Router();
+routes.post('/signup', authController.signUp);
+routes.post('/login', authController.login);
+routes.post('/forgotPassword', authController.forgotPassword);
+routes.patch('/resetPassword/:token', authController.resetPassword);
+routes.patch(
+  '/updatePassword',
+  authController.protect,
+  authController.updatePassword
+);
+routes.patch('/updateMe', authController.protect, userController.updateMe);
+routes.delete('/deleteMe', authController.protect, userController.deleteMe);
+routes
+  .route('/')
+  .get(userController.getAllUsers)
+  .post(userController.createUser);
+routes
+  .route('/:userId')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = routes;
