@@ -75,10 +75,40 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
     slug: String,
+    startLocation: {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      descriprition: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        descriprition: String,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
+  //If we have a virtual property and we want to show it.
   { toJSON: { virtuals: true }, toObject: { virtuals: true }, id: false }
 );
 
+//DOCUMENT MIDDLEWARE
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name);
   next();
@@ -92,8 +122,16 @@ tourSchema.pre('save', function (next) {
 //   next();
 // });
 
+//QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
+  next();
+});
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 tourSchema.post(/^find/, (doc, next) => {
@@ -106,8 +144,15 @@ tourSchema.pre('aggregate', function (next) {
   next();
 });
 
+//VIRTAUL PROPERTIES
 tourSchema.virtual('durationWeek').get(function () {
   return this.duration / 7;
+});
+//VIRTUAL POPULATE
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;

@@ -20,7 +20,7 @@ routes
   .get(userController.getAllUsers)
   .post(userController.createUser);
 routes
-  .route('/:userId')
+  .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);

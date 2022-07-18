@@ -21,7 +21,7 @@ mongoose
     console.log('Database connection established');
   });
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
 const importData = async () => {
   try {
     await Tour.create(tours);
