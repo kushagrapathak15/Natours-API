@@ -25,6 +25,7 @@ const createSendToken = (user, statusCode, res) => {
   user.password = undefined;
   res.status(statusCode).json({ status: 'success', token, data: { user } });
 };
+
 exports.signUp = catchAsync(async (req, res) => {
   const { name, email, password, passwordConfirm, role } = req.body;
   const newUser = await User.create({
@@ -52,7 +53,7 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
-  console.log('Checking whether user is authenticated...');
+  // console.log('Checking whether user is authenticated...');
 
   //1) Gettink Token and Checking if it is there
   let token;
@@ -81,20 +82,18 @@ exports.protect = catchAsync(async (req, res, next) => {
     return next('User recently changed password! please log in again.', 401);
 
   req.user = currUser;
-  console.log('User Authenticated');
+  // console.log('User Authenticated');
   next();
 });
 
 exports.restrictTo = (...roles) => {
-  console.log('Checking whether user is authorized...');
+  //console.log('Checking whether user is authorized...');
   return (req, res, next) => {
-    console.log(roles);
-    console.log(req.user.role);
-    if (!roles[0].includes(req.user.role))
+    if (!roles.includes(req.user.role))
       return next(
         new AppError('You do not have permission to access this route.', 403)
       );
-    console.log('User Authorized');
+    // console.log('User Authorized');
     next();
   };
 };
@@ -102,12 +101,12 @@ exports.restrictTo = (...roles) => {
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   //1)Get the user basen on posted email
   const user = await User.findOne({ email: req.body.email });
-  console.log(user);
+  // console.log(user);
   if (!user) return next(new AppError('No user found with this email', 404));
 
   //2)Generate the random reset token
   const resetToken = user.createPasswordResetToken();
-  console.log(resetToken);
+  // console.log(resetToken);
   await user.save({ validateBeforeSave: false });
 
   //3)Send the reset token to user's email address

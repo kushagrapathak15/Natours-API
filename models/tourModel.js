@@ -32,6 +32,7 @@ const tourSchema = new mongoose.Schema(
       default: 3.5,
       min: 0,
       max: 5,
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
@@ -83,7 +84,7 @@ const tourSchema = new mongoose.Schema(
       },
       coordinates: [Number],
       address: String,
-      descriprition: String,
+      description: String,
     },
     locations: [
       {
@@ -110,7 +111,7 @@ const tourSchema = new mongoose.Schema(
 
 //DOCUMENT MIDDLEWARE
 tourSchema.pre('save', function (next) {
-  this.slug = slugify(this.name);
+  this.slug = slugify(this.name).toLowerCase();
   next();
 });
 // tourSchema.pre('save', function (next) {
@@ -140,7 +141,11 @@ tourSchema.post(/^find/, (doc, next) => {
 });
 
 tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  if (!this.pipeline()[0]['$geoNear']) {
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  }
+  console.log(this.pipeline());
+
   next();
 });
 
@@ -148,11 +153,18 @@ tourSchema.pre('aggregate', function (next) {
 tourSchema.virtual('durationWeek').get(function () {
   return this.duration / 7;
 });
+
 //VIRTUAL POPULATE
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
   localField: '_id',
 });
+
+//Indexing
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;

@@ -11,7 +11,10 @@
   background-color: #55c57a;
   color: #fff;
 }
-
+::-webkit-scrollbar {
+  width: 0px; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
+}
 *,
 *::before,
 *::after {
@@ -32,7 +35,7 @@ body {
   font-weight: 300;
   font-family: 'Lato', sans-serif;
   color: #777;
-  padding: 3rem;
+  /* padding: 3rem; */
   min-height: 100vh;
   display: -webkit-box;
   display: -ms-flexbox;

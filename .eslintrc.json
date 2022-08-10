@@ -5,6 +5,8 @@
     "prettier/prettier": "error",
     "spaced-comment": "off",
     "no-console": "warn",
+    "prefer-arrow-callback": "warn",
+    "arrow-body-style": "warn",
     "consistent-return": "off",
     "func-names": "off",
     "object-shorthand": "off",
